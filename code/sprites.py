@@ -73,8 +73,6 @@ class Enemy(AnimatedSprite):
             self.move(dt)
             self.animate(dt)
         self.constraint()
-    
-
 
 class Bee(Enemy):
     def __init__(self, frames, pos, groups, speed):

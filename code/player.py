@@ -51,9 +51,11 @@ class Player(AnimatedSprite):
                     if self.direction.x < 0: 
                         self.rect.left = sprite.rect.right
                 else:
-                    if self.direction.y > 0: self.rect.bottom = sprite.rect.top
+                    if self.direction.y > 0: 
+                        self.rect.bottom = sprite.rect.top
+                        self.direction.y = 0
                     if self.direction.y < 0: self.rect.top = sprite.rect.bottom
-                    self.direction.y = 0
+                    
 
     def check_floor(self):
         bottom_rect = pygame.FRect((0, 0), (self.rect.width, 2)).move_to(midtop = self.rect.midbottom)

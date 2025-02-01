@@ -7,6 +7,8 @@ from myTimer import *
 from random import randint
 from sys import exit
 
+world = 'world2.tmx'
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -14,6 +16,7 @@ class Game:
         pygame.display.set_caption('Platformer')
         self.clock = pygame.time.Clock()
         self.running = True
+        self.finish_line = None
 
         # groups 
         self.all_sprites = AllSprites()
@@ -26,7 +29,7 @@ class Game:
         self.setup()
 
         # timer
-        self.bee_timer = Timer(500, func = self.create_bee, autostart=True, repeat='infinite')
+        self.bee_timer = Timer(2500, func = self.create_bee, autostart=True, repeat='infinite')
 
     def create_bullet(self, pos, direction):
         x = pos[0] + direction * 34 if direction == 1 else pos[0] + direction * 34 - self.bullet_surf.get_width()
@@ -57,7 +60,7 @@ class Game:
             audio.set_volume(0.1)
 
     def setup(self):
-        map = load_pygame(join('data', 'maps', 'world.tmx'))
+        map = load_pygame(join('data', 'maps', world))
         self.level_width = map.width * TILE_SIZE
         self.level_height = map.height * TILE_SIZE
 
@@ -72,7 +75,9 @@ class Game:
                 self.player = Player((obj.x, obj.y), (self.all_sprites), self.collision_sprites, self.player_frames, self.create_bullet)
             if obj.name == 'Worm':
                 Worm(self.worm_frames, self.i_worm_frames, pygame.FRect(obj.x, obj.y, obj.width, obj.height), (self.enemy_sprites, self.all_sprites))
-        
+            if obj.name == 'Finish':
+                self.finish_line = pygame.FRect(obj.x, obj.y, obj.width, obj.height)
+
         
         self.audio['music'].play(loops = -1)
 
@@ -86,9 +91,16 @@ class Game:
                for sprite in sprite_collisions:
                    sprite.destroy() 
 
+        # Finish line
+        if self.finish_line:
+            if self.finish_line.colliderect(self.player.rect):
+                print('You Won.')
+                self.running = False
+
         # enemies -> player
         player_collision = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
         if player_collision:
+            print("You Lose.")
             self.running = False
 
         if self.player.rect.top >= self.level_height + WINDOW_HEIGHT:
