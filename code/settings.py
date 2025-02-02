@@ -7,3 +7,10 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 1280,720
 TILE_SIZE = 64 
 FRAMERATE = 60
 BG_COLOR = '#fcdfcd'
+
+# difficulty Session
+DIFFICULTY = {
+    'easy' : (2500, 5),
+    'normal' : (1500, 3),
+    'hard' : (500, 1)
+} # ( Bee timer, player health)

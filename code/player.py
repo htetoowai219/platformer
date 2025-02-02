@@ -3,7 +3,7 @@ from sprites import *
 from myTimer import *
 
 class Player(AnimatedSprite):
-    def __init__(self, pos,  groups, collision_sprites, frames, create_bullet):
+    def __init__(self, pos,  groups, collision_sprites, frames, create_bullet, health):
         super().__init__(frames, pos, groups)
 
         # movement
@@ -27,7 +27,7 @@ class Player(AnimatedSprite):
         self.invicinble_timer = Timer(2000)
 
         # health
-        self.health = 5
+        self.health = health
 
     def input(self):
         keys = pygame.key.get_pressed()

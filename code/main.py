@@ -8,6 +8,7 @@ from random import randint
 from sys import exit
 
 world = 'world2.tmx'
+BEE_TIMER, PLAYER_HEALTH = DIFFICULTY['easy']
 
 class Game:
     def __init__(self):
@@ -29,7 +30,7 @@ class Game:
         self.setup()
 
         # timer
-        self.bee_timer = Timer(2500, func = self.create_bee, autostart=True, repeat='infinite')
+        self.bee_timer = Timer(BEE_TIMER, func = self.create_bee, autostart=True, repeat='infinite')
 
     def create_bullet(self, pos, direction):
         x = pos[0] + direction * 34 if direction == 1 else pos[0] + direction * 34 - self.bullet_surf.get_width()
@@ -78,7 +79,7 @@ class Game:
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
                 self.playerx, self.playery = obj.x, obj.y
-                self.player = Player((obj.x, obj.y), (self.all_sprites), self.collision_sprites, self.player_frames, self.create_bullet)
+                self.player = Player((obj.x, obj.y), (self.all_sprites), self.collision_sprites, self.player_frames, self.create_bullet, PLAYER_HEALTH)
             if obj.name == 'Worm':
                 Worm(self.worm_frames, self.i_worm_frames, pygame.FRect(obj.x, obj.y, obj.width, obj.height), (self.enemy_sprites, self.all_sprites))
             if obj.name == 'Finish':
