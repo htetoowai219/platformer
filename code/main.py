@@ -53,11 +53,16 @@ class Game:
         self.bee_frames = import_folder('images', 'enemies', 'bee')
         self.worm_frames = import_folder('images', 'enemies', 'worm')
         self.i_worm_frames = [pygame.transform.flip(surf, True, False) for surf in self.worm_frames]
-
+        self.heart_surf = import_image('images', 'heart', 'heart')
         # audio
         self.audio = audio_importer('audio')
         for audio in self.audio.values():
             audio.set_volume(0.1)
+        
+    def display_health(self):
+        for i in range(self.player.health):
+            x = 10 + i * (self.heart_surf.get_width() + 10)
+            self.display_surface.blit(self.heart_surf, (x, 10))
 
     def setup(self):
         map = load_pygame(join('data', 'maps', world))
@@ -72,6 +77,7 @@ class Game:
 
         for obj in map.get_layer_by_name('Entities'):
             if obj.name == 'Player':
+                self.playerx, self.playery = obj.x, obj.y
                 self.player = Player((obj.x, obj.y), (self.all_sprites), self.collision_sprites, self.player_frames, self.create_bullet)
             if obj.name == 'Worm':
                 Worm(self.worm_frames, self.i_worm_frames, pygame.FRect(obj.x, obj.y, obj.width, obj.height), (self.enemy_sprites, self.all_sprites))
@@ -99,12 +105,19 @@ class Game:
 
         # enemies -> player
         player_collision = pygame.sprite.spritecollide(self.player, self.enemy_sprites, False, pygame.sprite.collide_mask)
-        if player_collision:
-            print("You Lose.")
-            self.running = False
+        if player_collision and not self.player.invicinble_timer:
+            if self.player.health > 1:
+                self.player.invicinble_timer.activate()
+                self.player.health -= 1
+            else:
+                self.running = False
 
-        if self.player.rect.top >= self.level_height + WINDOW_HEIGHT:
-            self.running = False
+        # if self.player.rect.top >= self.level_height + WINDOW_HEIGHT:
+        #     if self.player.health > 1:
+        #         self.player.health -= 1
+        #         self.player.rect.center = (self.playerx, self.playery)
+        #     else:
+        #         self.running = False
 
     def run(self):
         while self.running:
@@ -122,6 +135,7 @@ class Game:
             # draw 
             self.display_surface.fill(BG_COLOR)
             self.all_sprites.draw(target_pos=self.player.rect.center)
+            self.display_health()
             pygame.display.update()
         
         pygame.quit()

@@ -15,8 +15,19 @@ class Player(AnimatedSprite):
         self.flip = False
         self.create_bullet = create_bullet
 
+        self.invicinble_frames = []
+        for frame in self.frames:
+            iframe = pygame.mask.from_surface(frame).to_surface()
+            iframe.set_colorkey('black')
+            self.invicinble_frames.append(frame)
+            self.invicinble_frames.append(iframe)
+
         # timer
         self.shoot_timer = Timer(500)
+        self.invicinble_timer = Timer(2000)
+
+        # health
+        self.health = 5
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -56,7 +67,6 @@ class Player(AnimatedSprite):
                         self.direction.y = 0
                     if self.direction.y < 0: self.rect.top = sprite.rect.bottom
                     
-
     def check_floor(self):
         bottom_rect = pygame.FRect((0, 0), (self.rect.width, 2)).move_to(midtop = self.rect.midbottom)
         level_rects = [sprite.rect for sprite in self.collision_sprites]
@@ -70,11 +80,15 @@ class Player(AnimatedSprite):
             self.frame_index = 0
 
         self.frame_index = 1 if not self.on_floor else self.frame_index
-        self.image = self.frames[int(self.frame_index) % len(self.frames)]
+        if self.invicinble_timer:
+            self.image = self.invicinble_frames[int(self.frame_index) % len(self.invicinble_frames)]
+        else:
+            self.image = self.frames[int(self.frame_index) % len(self.frames)]
         self.image = pygame.transform.flip(self.image, self.flip, False)
 
     def update(self, dt):
         self.shoot_timer.update()
+        self.invicinble_timer.update()
         self.check_floor()
         self.input()
         self.move(dt)
